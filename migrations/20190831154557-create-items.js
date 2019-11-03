@@ -1,30 +1,75 @@
 'use strict';
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Items', {
-      id: {
+  up: (queryInterface, DataTypes) => {
+    return Promise.all([
+    queryInterface.createTable('Items', {
+      code: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        unique:true,
+        type: DataTypes.STRING
       },
-      name: {
-        type: Sequelize.STRING
+      lecture: {
+          allowNull: false,
+          unique:true,
+          type: DataTypes.STRING
       },
-      quantity: {
-        type: Sequelize.INTEGER
+      professor: {
+          allowNull: false,
+          type: DataTypes.STRING
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      location: {
+          allowNull: false,
+          type: DataTypes.STRING
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      start_time: {
+          allowNull: false,
+          type: DataTypes.STRING
+      },
+      end_time: {
+          allowNull: false,
+          type: DataTypes.INTEGER
+      },
+      dayofweek1: {
+          allowNull: false,
+          type: DataTypes.STRING
+      },
+      dayofweek2: {
+        allowNull: true,
+        type: DataTypes.STRING
+      },
+      discription:{
+          allowNull : true,
+          type: DataTypes.STRING
+      },
+      isAdded:{
+        allowNull : true,
+        type: DataTypes.BOOLEAN
       }
-    });
+    }),
+    queryInterface.createTable('Memos', {
+      lecture: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        references: {
+          model: "Items",
+          key: "lecture"
+        }
+      },
+      title: {
+          allowNull: false,
+          type: DataTypes.STRING
+      },
+      discription: {
+          allowNull: false,
+          type: DataTypes.STRING
+      },
+    })
+  ])
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Items');
+    return Promise.all([
+      queryInterface.dropTable('Memos'),
+      queryInterface.dropTable('Items')]) 
   }
 };

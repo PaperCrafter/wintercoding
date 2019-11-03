@@ -1,28 +1,41 @@
 'use strict';
+var fs = require('fs');
+var path = require('path');
+var filePath = path.join(__dirname, 'courses.csv');
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    let datas = [];
-    for(let i = 0; i < 10; i++){
-      let obj = {
-        name: "item" + i,
-        quantity: 10,
-        createdAt: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
-        updatedAt: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
+    let datas = fs.readFileSync(filePath, {encoding :"utf8"});
+    let rows = datas.split("\n");
+    var result=[];
+    for(var rowIndex in rows){
+      var row = rows[rowIndex].split(",");
+      if(rowIndex==="0"){var columns = row;}
+      else{
+        if(row[6].length > 1){
+          row[7] = row[6].substr(1,1);
+          row[6] = row[6].substr(0,1);
+        }else{
+          row[7] = null;
+        }
+        let obj = {
+          code: row[0],
+          lecture: row[1],
+          professor: row[2],
+          location:row[3],
+          start_time:row[4],
+          end_time:row[5],
+          dayofweek1:row[6],
+          dayofweek2:row[7],
+        }
+        result.push(obj)
       }
-      datas.push(obj)
     }
 
-    return queryInterface.bulkInsert('Items', datas, {});
+    return queryInterface.bulkInsert('Items', result, {});
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
 
-      Example:
-      return queryInterface.bulkDelete('People', null, {});
-    */
   }
 };

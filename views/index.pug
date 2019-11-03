@@ -1,5 +1,202 @@
 extends layout
 
 block content
-  h1= title
-  p Happy Coding!
+  .container-lecture
+      section(class="header")
+          .h3="시간표 만들기"
+
+      section(class="section-nav")
+          form(id="search-form" class="form-search" action="/items/search_modal_item")
+              input(type="text" placeholder="강의 검색" class="form-control" name="input")
+              span
+                i(class="material-icons ic-search") search
+
+
+          ul(class="list-lecture")
+            for item in items
+              li(class="card-lecture")
+                a(class="lecture-title" href="#")= item.lecture
+                  h6(class="lecture-time")
+                      i(class="material-icons ic-lecture-info") access_time
+                      if item.dayofweek2 != "\r"
+                        if item.start_time < 10
+                          span= '0'+item.start_time + ":00" + " - " + item.end_time + ":00" + " | " +  "("+ item.dayofweek1 +") " + "("+ item.dayofweek2 +")"
+                        else
+                          span= item.start_time + ":00" + " - " + item.end_time + ":00" + " | " +  "("+ item.dayofweek1 +") " + "("+ item.dayofweek2 +")"
+                      else
+                        if item.start_time < 10
+                          span= '0'+item.start_time + ":00" + " - " + item.end_time + ":00" + " | " +  "("+ item.dayofweek1 +")"
+                        else 
+                          span= item.start_time + ":00" + " - " + item.end_time + ":00" + " | " +  "("+ item.dayofweek1 +")"
+                  ul(class="list-lecture-info")
+                      li= "교과목 코드 : " + item.code
+                      li= "담당 교수 : " +  item.professor
+                      li= "강의실 : " + item.location
+
+      section(class="section-list")
+          div(class="container-xl")
+              header(class="header-timetable-info")
+                  h3="2019년 11월"
+                  div(class="btn-group" role="group")
+                      button(type="button" class="btn btn-light btn-previous")
+                          i(class="material-icons ic-previous")="chevron_left"
+
+                      button(type="button" class="btn btn-light btn-today")=오늘
+                      button(type="button" class="btn btn-light btn-next")
+                          i(class="material-icons ic-next")="chevron_right"
+
+              .table-schedule
+                .timeline
+                  ul
+                    li
+                      span 09:00
+                    li
+                      span 09:30
+                    li
+                      span 10:00
+                    li
+                      span 10:30
+                    li
+                      span 11:00
+                    li
+                      span 11:30
+                    li
+                      span 12:00
+                    li
+                      span 12:30
+                    li
+                      span 13:00
+                    li
+                      span 13:30
+                    li
+                      span 14:00
+                    li
+                      span 14:30
+                    li
+                      span 15:00
+                    li
+                      span 15:30
+                    li
+                      span 16:00
+                    li
+                      span 16:30
+                    li
+                      span 17:00
+                    li
+                      span 17:30
+                    li
+                      span 18:00
+
+                .table-schedule-subject
+                  ul.list-lecture-item
+                    li.timeline-vertical
+                      .top-info.today
+                        h4.day Mon
+                      ul
+                        
+                    li.timeline-vertical
+                      .top-info
+                        h4.day Tue
+                      ul
+                        
+                    li.timeline-vertical
+                      .top-info
+                        h4.day Wed
+                      ul
+                        
+                    li.timeline-vertical
+                      .top-info
+                        h4.day Thu
+                      ul
+                       
+                    li.timeline-vertical
+                      .top-info
+                        h4.day Fri
+                      ul
+                        
+
+              #modal-lecture-info.modal.fade(role='dialog' aria-hidden='true')
+                .modal-dialog(role='document')
+                  .modal-content
+                    .modal-header
+                      button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                    .modal-body
+                      h3.lecture-title
+                      ul.lecture-info
+                        li.lecture-time
+                          i.material-icons.ic-lecture-info access_alarm
+                          span 강의 시간 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info code
+                          span 교과목 코드 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info school
+                          span 담당 교수 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info business
+                          span 강의실 : 
+                      .lecture-description
+                        p.txt-description
+
+                    .modal-footer
+                      button.btn.btn-light(type='button' data-dismiss='modal') 취소
+                      button.btn.btn-primary(type='button') 과목 등록하기
+
+              #modal-lecture-task.modal.fade(role='dialog' aria-hidden='true')
+                .modal-dialog(role='document')
+                  .modal-content
+                    .modal-header
+                      button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                    .modal-body
+                      h3.lecture-title 
+                      ul.lecture-info
+                        li.lecture-time
+                          i.material-icons.ic-lecture-info access_alarm
+                          span 강의시간 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info code
+                          span 교과목 코드 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info school
+                          span 담당 교수 : 
+                        li.lecture-code
+                          i.material-icons.ic-lecture-info business
+                          span 강의실 : 
+                      .lecture-description
+                        p.txt-description
+                          
+                      .lecture-memo
+                        h5.memo-header 메모
+                        ul
+                          li.memo-list
+                            .memo-content(data-toggle='tooltip' data-placement='top' title='' data-original-title='과제 설명 텍스트 과제 설명 텍스트 과제 설명 텍스트')
+                              i.material-icons.ic-lecture-noti assignment
+                              span.lecture-noti-title 과제 제목 텍스트
+                            .memo-btn
+                              a(href='')
+                                i.material-icons.ic-lecture-noti delete
+                    .modal-footer
+                      .left
+                        button.btn.btn-light-primary(type='button' data-toggle='popover' data-trigger='click' data-placement='right' data-html='true')
+                          | 메모 등록
+                      .right
+                        button.btn.btn-light(type='button' data-dismiss='modal') 확인
+                        button.btn.btn-danger(type='button') 과목 삭제하기
+
+              #PopoverContent(style='display: none')
+                h5.schedule-title 메모 등록하기
+                  .form-group
+                    label.col-form-label
+                      | 제목
+                      input#recipient-name.form-control(type='text' placeholder='제목 추가')
+                  .form-group
+                    label.col-form-label(for='message-text') 설명
+                    textarea#message-text.form-control(placeholder='설명 추가' type='text')
+                  button.btn.btn-primary.btn-save(type='button') 등록
+
+  script(src='https://code.jquery.com/jquery-3.3.1.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js')
+  script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js')
+  script(src='/javascripts/timetable.js')
