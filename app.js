@@ -10,7 +10,7 @@ var memosRouter = require('./routes/memos');
 
 var {sequelize} = require('./models');
 var app = express();
-sequelize.sync();
+//sequelize.sync();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
