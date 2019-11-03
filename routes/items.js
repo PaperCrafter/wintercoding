@@ -132,7 +132,6 @@ router.post('/chk_duplicated_item', (req, res, next)=>{
             }}
           ]
         }],
-
         isAdded : true
       }
     })
