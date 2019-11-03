@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var {Items, Sequelize} = require('../models');
+var {Items,Memos, Sequelize} = require('../models');
 var Op = Sequelize.Op;
 /* GET users listing. */
 //modal을 클릭했을 경우 항목을 보여주기 위한 get
@@ -75,6 +75,30 @@ router.get('/get_table_item', (req, res, next)=>{
     next(error);
   }
 });
+
+//강의 테이블에 추가된 item만 반환
+router.get('/get_table_item_join', (req, res, next)=>{
+  try{
+    Items.findAll({
+      include:{
+        model:Memos,
+      },
+      raw:true,
+      where:{
+        isAdded:1
+      }
+    })
+    .then((items)=>{
+        //console.log(items);
+        res.send(items);
+      }
+    );
+  }catch(error){
+    console.log(error);
+    next(error);
+  }
+});
+
 
 //item 중복검사를 위한 get
 router.post('/chk_duplicated_item', (req, res, next)=>{

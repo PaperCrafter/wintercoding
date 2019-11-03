@@ -34,11 +34,12 @@ router.get('/get_memo', (req, res, next)=>{
 });
 
 //한 과목에 해당하는 메모를 찾을 때 사용하는 api입니다.
-router.delete('/get_memo', (req, res, next)=>{
-    console.log(req.query.lecture);
-    console.log(req.query.title);
+router.delete('/delete_memo', (req, res, next)=>{
     Memos.destroy({
-        where:{lecture:req.query.lecture}
+        where:{
+            lecture:req.body.lecture,
+            title:req.body.title
+        }
     })
     .then((memos)=>{
         console.log(memos);

@@ -44,7 +44,6 @@ $(function () {
     placement: 'right',
     sanitize: false,
     content: function () {
-
       return $("#PopoverContent").html();
     }
   });
@@ -107,6 +106,128 @@ $('#modal-lecture-info .btn-primary').click(function () {
     alert('추가할 수 없습니다.');
   }
 });
+
+
+//동적으로 시간표에 추가된 항목 표시
+$(function () {
+  $.ajax({
+    url :'/items/get_table_item_join/',
+    method:'get',
+    success: function(items) {
+      var list_lecture_item = $('.list-lecture-item li ul');
+      console.log(list_lecture_item);
+      var list_lecture_mon = list_lecture_item.eq(0);
+      var list_lecture_tue = list_lecture_item.eq(1);
+      var list_lecture_wed = list_lecture_item.eq(2);
+      var list_lecture_thr = list_lecture_item.eq(3);
+      var list_lecture_fri = list_lecture_item.eq(4);
+      var counter = 1;
+      //선택된 항목들에 한해 추가
+      items.map((item, index)=>{
+        if(index==0||items[index-1].lecture != items[index].lecture){
+          //console.log(item);
+          var list_element = document.createElement('li');
+          list_element.classList.add('lecture-time');
+          //시간 설정
+          if(item.end_time - item.start_time == 2){
+            list_element.classList.add('two-hr');
+          }
+          //시간표 시작 위치 설정
+          list_element.classList.add('hr-'+item.start_time);
+          //시간표 색상정하는 attribute 설정
+          if(counter < 10)list_element.setAttribute('data-event', 'lecture-0' + counter);
+          else list_element.setAttribute('data-event', 'lecture-' + counter);
+          counter++;
+
+          var tagA = document.createElement('a');
+          tagA.setAttribute('href', '#');
+
+          var div = document.createElement('div');
+          div.className = 'lecture-info';
+
+          var lecture_title = document.createElement('h6');
+          lecture_title.className = 'lecture-title';
+          lecture_title.textContent =item.lecture;
+          div.appendChild(lecture_title);
+        
+          var lecture_location = document.createElement('h6');
+          lecture_location.className = 'lecture-location';
+          lecture_location.textContent = item.location;
+          div.appendChild(lecture_location);
+          
+          tagA.appendChild(div);
+          list_element.appendChild(tagA);
+
+
+          //시간표에 추가
+          var day = item.dayofweek1;
+          for(var i = 0; i < 2; i++){
+            if(i === 1){
+              if(item.dayofweek2 == '\r') break;
+              list_element = list_element.cloneNode(true);
+              day = item.dayofweek2;
+            }
+            //요일
+            if(day === '월'){list_lecture_mon.append(list_element);}
+            else if(day === '화'){list_lecture_tue.append(list_element);}
+            else if(day === '수'){list_lecture_wed.append(list_element);}
+            else if(day === '목'){list_lecture_thr.append(list_element);}
+            else if(day === '금'){list_lecture_fri.append(list_element);}
+          } 
+        }
+        //메모기능 추가
+        if(item["Memos.title"] != null){
+          var memo_location = $('hr-'+item.start_time).find('a');
+          var memo_to_append = document.createElement('div');
+          memo_to_append.className='lecture-noti';
+          memo_to_append.setAttribute('data-toggle', 'tooltip');
+          memo_to_append.setAttribute('data-placement', 'top');
+          memo_to_append.setAttribute('title', item["Memos.discription"]);
+          memo_to_append.setAttribute('data-original-title', item["Memos.discription"]);
+
+          var memo_icon = document.createElement('i');
+          memo_icon.classList.add('material-icons');
+          memo_icon.classList.add('ic-lecture-noti');
+          memo_icon.textContent = 'assignment';
+
+          var memo_text = document.createElement('span');
+          memo_text.className='lecture-noti-title';
+          memo_text.textContent= item["Memos.title"];
+
+          memo_to_append.appendChild(memo_icon);
+          memo_to_append.appendChild(memo_text);
+
+          //memo_location.append(memo_to_append);
+          console.log(memo_to_append);
+
+          //요일에 맞는 시간표 항목에 메모 추가
+          var day = item.dayofweek1;
+          for(var i = 0; i < 2; i++){
+            if(i === 1){
+              if(item.dayofweek2 == '\r') break;
+              memo_to_append = memo_to_append.cloneNode(true);
+              day = item.dayofweek2;
+            }
+            //요일
+            if(day === '월'){list_lecture_mon.find('.hr-'+item.start_time).children('a').append(memo_to_append);
+            console.log(list_lecture_mon.find('.hr-'+item.start_time))
+            console.log(list_lecture_mon.find('.hr-9'))
+            console.log(list_lecture_mon)}
+            else if(day === '화'){list_lecture_tue.find('.hr-'+item.start_time).children('a').append(memo_to_append);}
+            else if(day === '수'){list_lecture_wed.find('.hr-'+item.start_time).children('a').append(memo_to_append);}
+            else if(day === '목'){list_lecture_thr.find('.hr-'+item.start_time).children('a').append(memo_to_append);}
+            else if(day === '금'){list_lecture_fri.find('.hr-'+item.start_time).children('a').append(memo_to_append);}
+          }
+        }
+        $.on_toggle();
+      })
+    }
+  }, 'json');
+});
+
+
+
+/*
 //동적으로 시간표에 추가된 항목 표시
 $(function () {
   $.ajax({
@@ -155,6 +276,10 @@ $(function () {
         tagA.appendChild(div);
         list_element.appendChild(tagA);
 
+
+        //메모기능 추가
+
+
         //시간표에 추가
         var day = item.dayofweek1;
         for(var i = 0; i < 2; i++){
@@ -175,6 +300,7 @@ $(function () {
     }
   }, 'json');
 });
+*/
 
 //클릭 시 동적으로 추가된 모달(강의 테이블에 위치) 띄우기
 $(document).on('click','.lecture-time > a', function () {
@@ -205,6 +331,7 @@ $(document).on('click','.lecture-time > a', function () {
 
     }
   }, 'json');
+  $.delete_memo();
   $('#modal-lecture-task').modal('show');
 });
 
@@ -244,6 +371,7 @@ $(document).on('click','.popover-body .btn-save', function () {
   })
 })
 
+//메모하나를 가져오는 함수
 $.get_memo =  function () {
   $.ajax({
     url :'/memos/get_memo/',
@@ -286,7 +414,7 @@ $.get_memo =  function () {
         memo_btn.className='memo-btn';
 
         var memo_a = document.createElement('a');
-        memo_a.setAttribute('href', ' ');
+        memo_a.setAttribute('href', '#');
 
         var memo_i2 = document.createElement('i');
         memo_i2.classList.add('material-icons');
@@ -301,61 +429,25 @@ $.get_memo =  function () {
         memo_ul.append(memo_li);
       })
       $.on_toggle();
+      $.delete_memo();
     }
   }, 'json');
 }
 
-
-/*
-              #modal-lecture-info.modal.fade(role='dialog' aria-hidden='true')
-                .modal-dialog(role='document')
-                  .modal-content
-                    .modal-header
-                      button.close(type='button' data-dismiss='modal' aria-label='Close')
-                        span(aria-hidden='true') &times;
-                    .modal-body
-                      h3.lecture-title &#xC6F9; &#xD504;&#xB85C;&#xADF8;&#xB798;&#xBC0D;
-                      ul.lecture-info
-                        li.lecture-time
-                          i.material-icons.ic-lecture-info access_alarm
-                          span &#xAC15;&#xC758; &#xC2DC;&#xAC04; : 09:00 - 10:50 | (&#xC6D4;), (&#xC218;)
-                        li.lecture-code
-                          i.material-icons.ic-lecture-info code
-                          span &#xAD50;&#xACFC;&#xBAA9; &#xCF54;&#xB4DC; : A0000001
-                        li.lecture-code
-                          i.material-icons.ic-lecture-info school
-                          span &#xB2F4;&#xB2F9; &#xAD50;&#xC218; : &#xAE40;&#xC9C4;&#xC218;
-                        li.lecture-code
-                          i.material-icons.ic-lecture-info business
-                          span &#xAC15;&#xC758;&#xC2E4; : &#xACF5;&#xD559;&#xAD00; 204
-                      .lecture-description
-                        p.txt-description
-                          | &#xBCF8; &#xAC15;&#xC758;&#xC5D0;&#xC11C;&#xB294; JSP&#xB97C; &#xC774;&#xC6A9;&#xD55C; &#xC6F9; &#xAE30;&#xBC18; &#xD504;&#xB85C;&#xADF8;&#xB798;&#xBC0D; &#xAE30;&#xCD08; &#xBC0F; &#xC751;&#xC6A9;&#xAE30;&#xC220;&#xC5D0; &#xB300;&#xD574; &#xD559;&#xC2B5;&#xD569;&#xB2C8;&#xB2E4;. &#xD2B9;&#xD788; &#xC2E4;&#xC2B5; &#xC704;&#xC8FC;&#xC758; &#xC218;&#xC5C5;&#xC73C;&#xB85C; &#xD504;&#xB85C;&#xADF8;&#xB798;&#xBC0D; &#xC2A4;&#xD0AC; &#xD5A5;&#xC0C1; &#xBC0F;
-                          | &#xC2E4;&#xBB34; &#xB2A5;&#xB825;&#xC744; &#xAC16;&#xCD9C; &#xC218; &#xC788;&#xB3C4;&#xB85D; &#xD569;&#xB2C8;&#xB2E4;.
-                    .modal-footer
-                      button.btn.btn-light(type='button' data-dismiss='modal') &#xCDE8;&#xC18C;
-                      button.btn.btn-primary(type='button') &#xACFC;&#xBAA9; &#xB4F1;&#xB85D;&#xD558;&#xAE30;
-
-
-                      li.lecture-time.two-hr.hr-11(data-event='lecture-01')
-                          a(href='#')
-                            .lecture-info
-                              h6.lecture-title &#xC6F9; &#xD504;&#xB85C;&#xADF8;&#xB798;&#xBC0D;
-                              h6.lecture-location &#xACF5;&#xD559;&#xAD00; 204
-                            .lecture-noti(data-toggle='tooltip' data-placement='top' title='' data-original-title='과제 설명 텍스트 과제 설명 텍스트 과제 설명 텍스트')
-                              i.material-icons.ic-lecture-noti assignment
-                              span.lecture-noti-title &#xACFC;&#xC81C; &#xC81C;&#xBAA9; &#xD14D;&#xC2A4;&#xD2B8;
-                        li.lecture-time.two-hr.hr-13(data-event='lecture-02')
-                          a(href='#')
-                            .lecture-info
-                              h6.lecture-title &#xD504;&#xB85C;&#xADF8;&#xB798;&#xBC0D;&#xC758; &#xC6D0;&#xB9AC;
-                              h6.lecture-location &#xACF5;&#xD559;1&#xAD00; 102
-                            .lecture-noti(data-toggle='tooltip' data-placement='top' title='' data-original-title='과제 설명 텍스트 과제 설명 텍스트 과제 설명 텍스트')
-                              i.material-icons.ic-lecture-noti assignment
-                              span.lecture-noti-title &#xACFC;&#xC81C; &#xC81C;&#xBAA9; &#xD14D;&#xC2A4;&#xD2B8;
-                        li.lecture-time.hr-16(data-event='lecture-03')
-                          a(href='#')
-                            .lecture-info
-                              h6.lecture-title &#xB17C;&#xB9AC; &#xC124;&#xACC4;
-                              h6.lecture-location &#xACF5;&#xD559;1&#xAD00; 102
-*/
+//메모 제거 함수
+$.delete_memo = function () {
+  $('.memo-btn a').on('click',function(){
+    $.ajax({
+      url :'/memos/delete_memo/',
+      data:{
+        lecture:$('.modal-body h3').text(),
+        title:$(this).parent().parent().find('span').text()
+      },
+      method:'delete',
+      success:function(res){
+        $.get_memo();
+        console.log(res);
+      }
+    }, 'json')
+  })
+}
