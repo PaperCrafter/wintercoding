@@ -18,7 +18,7 @@ block content
                 a(class="lecture-title" href="#")= item.lecture
                   h6(class="lecture-time")
                       i(class="material-icons ic-lecture-info") access_time
-                      if item.dayofweek2 != "\r"
+                      if item.dayofweek2 != "\r" && item.dayofweek2 != "null"
                         if item.start_time < 10
                           span= '0'+item.start_time + ":00" + " - " + item.end_time + ":00" + " | " +  "("+ item.dayofweek1 +") " + "("+ item.dayofweek2 +")"
                         else

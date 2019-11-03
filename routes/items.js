@@ -153,29 +153,36 @@ router.post('/chk_duplicated_item', (req, res, next)=>{
 //강의 테이블에 item 하나 추가
 router.patch('/add_timetable_item/:code', (req, res, next)=>{
   console.log(req.params.code);
-
-  Items.update({isAdded: 1},{
-    where:{code:req.params.code}
-  })
-  .then((items)=>{
-    console.log(items);
-    res.send(items);
-    }
-  );
+  try{
+    Items.update({isAdded: 1},{
+      where:{code:req.params.code}
+    })
+    .then((items)=>{
+      console.log(items);
+      res.send(items);
+      }
+    )
+  }catch(error){
+    console.log(error);
+    next(error);
+  }
 });
 
 //time-table에 존재하는 item을 제거
 router.patch('/delete_timetable_item/:lecture', (req, res, next)=>{
   console.log(req.params.lecture);
-
-  Items.update({isAdded: 0},{
-    where:{lecture:req.params.lecture}
-  })
-  .then((items)=>{
-    console.log(items);
-    res.send(items);
-    }
-  );
+  try{
+    Items.update({isAdded: 0},{
+      where:{lecture:req.params.lecture}
+    })
+    .then((items)=>{
+      console.log(items);
+      res.send(items);
+    });
+  }catch(error){
+    console.log(error);
+    next(error);
+  }
 });
 
 module.exports = router;

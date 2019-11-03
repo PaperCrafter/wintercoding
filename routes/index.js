@@ -4,11 +4,16 @@ var {Items} = require('../models');
 /* GET home page. */
 
 router.get('/', function(req, res, next) {
-  Items.findAll()
-  .then((items)=>{
-    //console.log(items);
-    res.render('index', {items});
-  });
+  try{
+    Items.findAll()
+    .then((items)=>{
+      //console.log(items);
+      res.render('index', {items});
+    });
+  }catch(error){
+    console.log(error);
+    next(error);
+  }
 });
 
 module.exports = router;
