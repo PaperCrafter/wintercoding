@@ -163,7 +163,7 @@ $(function () {
           var day = item.dayofweek1;
           for(var i = 0; i < 2; i++){
             if(i === 1){
-              if(item.dayofweek2 == '\r'|| res.dayofweek2 == null) break;
+              if(item.dayofweek2 == '\r'|| item.dayofweek2 == null) break;
               list_element = list_element.cloneNode(true);
               day = item.dayofweek2;
             }
@@ -204,7 +204,7 @@ $(function () {
           var day = item.dayofweek1;
           for(var i = 0; i < 2; i++){
             if(i === 1){
-              if(item.dayofweek2 == '\r'|| res.dayofweek2 == null) break;
+              if(item.dayofweek2 == '\r'|| item.dayofweek2 == null) break;
               memo_to_append = memo_to_append.cloneNode(true);
               day = item.dayofweek2;
             }
