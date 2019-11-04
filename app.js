@@ -9,6 +9,13 @@ var itemsRouter = require('./routes/items');
 var memosRouter = require('./routes/memos');
 
 var {sequelize} = require('./models');
+
+const pkgDir = require('pkg-dir');
+(async () => {
+  const rootDir = await pkgDir(__dirname);
+  console.log(rootDir);
+})();
+
 var app = express();
 //sequelize.sync();
 // view engine setup
