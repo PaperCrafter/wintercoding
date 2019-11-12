@@ -112,7 +112,7 @@ $('#modal-lecture-info .btn-primary').click(function () {
 //동적으로 시간표에 추가된 항목 표시
 $(function () {
   $.ajax({
-    url :'/items/memos/',
+    url :'/items/with/memos',
     method:'get',
     success: function(items) {
       var list_lecture_item = $('.list-lecture-item li ul');

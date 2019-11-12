@@ -29,7 +29,7 @@ router.get('/search', (req, res, next)=>{
 });
 
 //강의 테이블에 추가된 item만 반환
-router.get('/memos', (req, res, next)=>{
+router.get('/with/memos', (req, res, next)=>{
   try{
     Items.findAll({
       include:{
