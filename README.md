@@ -3,7 +3,7 @@
 1차 수정 = uri를 restful하게 수정
 RESTful -  api
 
-items
+### items
 |CRUD|HTTP method|Rout|
 |-----------|------|------|
 |과목정보 검색|get|/items/search?input='검색어'|
@@ -13,7 +13,7 @@ items
 |과목 시간표에 등록|patch|/items/:id/register|
 |과목 시간표에서 제거|patch|/items/:id/unregister|
 
-memos
+### memos
 |CRUD|HTTP method|Rout|
 |-----------|------|------|
 |특정 과목에 있는 메모 가져오기|get|/memos/:id|
