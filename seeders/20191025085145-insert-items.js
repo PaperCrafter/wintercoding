@@ -19,6 +19,7 @@ module.exports = {
           row[7] = null;
         }
         let obj = {
+          id:rowIndex,
           code: row[0],
           lecture: row[1],
           professor: row[2],

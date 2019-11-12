@@ -1,12 +1,11 @@
 $('.card-lecture').click(function () {
   var card = $(this);
-  var lecture = card.find('.list-lecture-info').first().text();
-  lecture_code = lecture.substr(9,9);
+  var id = card.find('.lecture-id').val()
   $.ajax({
-    url :'/items/get_modal_item',
+    url :'/items/'+id,
     method:'get',
-    data: {'lecture_code':lecture_code},
     success: function(res) {
+      $('#modal-lecture-info .lecture-id').val(res.id);
       $('#modal-lecture-info .lecture-title').text(res.lecture);
       //시간 텍스트 조정
       if(res.start_time <10)res.start_time = '0'+res.start_time;
@@ -18,6 +17,7 @@ $('.card-lecture').click(function () {
       else{
         $('#modal-lecture-info .lecture-time span').text("강의 시간 : " + res.start_time+":00 - " + res.end_time+ ":00 "+"("+ res.dayofweek1+") "+"("+ res.dayofweek2+")");
       }
+
       $('#modal-lecture-info .lecture-code').children('span').each(function(index, item){
         if(index == 0 )$(this).text('교과목 코드 : '+ res.code);
         else if(index == 1 )$(this).text('담당 교수 : '+ res.professor);
@@ -54,6 +54,8 @@ $(function () {
 $('#modal-lecture-info .btn-primary').click(function () {
   //0 기본정보 받아오기
   var lecture_info = $('#modal-lecture-info');
+  var lecture_id = $('#modal-lecture-info').find('.lecture-id').val();
+  console.log(lecture_id)
   var lecture_code = lecture_info.find('.lecture-code').children('span').first().text().substr(9,9);
   var lecture_time = lecture_info.find('.lecture-time').children('span').first().text();
   var lecture_time_start = lecture_time.substr(8,2);
@@ -67,7 +69,7 @@ $('#modal-lecture-info .btn-primary').click(function () {
   //1 시간 중복 확인 - ajax
   var can_append = false;
   $.ajax({
-    url :'/items/chk_duplicated_item',
+    url :'/items/check-duplicated',
     data: {
       'code':lecture_code,
       'start_time':lecture_time_start,
@@ -79,6 +81,7 @@ $('#modal-lecture-info .btn-primary').click(function () {
     async:false,
     success: function(res) {
       //만약 추가할 수 있으면
+      console.log(res);
       if(res.status == true){
         can_append = true
       }
@@ -89,13 +92,11 @@ $('#modal-lecture-info .btn-primary').click(function () {
       //add discription if possible
     }
   }, 'json');
-  console.log(can_append);
   //isAdded를 1로 만들어서 추가됨을 알림
   if(can_append === true){
-    var data = {'code':lecture_code};
-    console.log(data);
+    var id = lecture_id;
     $.ajax({
-      url :'/items/add_timetable_item/'+lecture_code,
+      url :'/items/' + id + '/register',
       type:'patch',
       async:false,
       success: function(res) {
@@ -111,7 +112,7 @@ $('#modal-lecture-info .btn-primary').click(function () {
 //동적으로 시간표에 추가된 항목 표시
 $(function () {
   $.ajax({
-    url :'/items/get_table_item_join/',
+    url :'/items/memos/',
     method:'get',
     success: function(items) {
       var list_lecture_item = $('.list-lecture-item li ul');
@@ -144,6 +145,12 @@ $(function () {
 
           var div = document.createElement('div');
           div.className = 'lecture-info';
+
+          var lecture_id = document.createElement('input');
+          lecture_id.className='lecture-id';
+          lecture_id.setAttribute('type', 'hidden');
+          lecture_id.setAttribute('value', item.id);
+          div.appendChild(lecture_id);
 
           var lecture_title = document.createElement('h6');
           lecture_title.className = 'lecture-title';
@@ -227,12 +234,13 @@ $(function () {
 
 //클릭 시 동적으로 추가된 모달(강의 테이블에 위치) 띄우기
 $(document).on('click','.lecture-time > a', function () {
-  var lecture = $(this).find('.lecture-title').text();
-  console.log(lecture);
+  var id = $(this).find('.lecture-id').val();
+
   $.ajax({
-    url :'/items/get_modal_item_name',
-    data: {'lecture':lecture},
+    url :'/items/'+id,
+    method:'get',
     success: function(res) {
+      $('#modal-lecture-task .lecture-id').val(res.id);
       $('#modal-lecture-task .lecture-title').text(res.lecture);
       //시간 텍스트 조정
       if(res.start_time <10)res.start_time = '0'+res.start_time;
@@ -251,7 +259,6 @@ $(document).on('click','.lecture-time > a', function () {
       });
       $.get_memo();
       //add discription if possible
-
     }
   }, 'json');
   $.delete_memo();
@@ -260,10 +267,9 @@ $(document).on('click','.lecture-time > a', function () {
 
 //제거버튼을 누르면 timetable에서 제거
 $('#modal-lecture-task .btn-danger').click(function(){
-  var lecture = $(this).parent().parent().parent().find('.lecture-title').text();
-  console.log(lecture);
+  var id = $(this).parent().parent().parent().find('.lecture-info .lecture-id').val();
   $.ajax({
-    url:'/items/delete_timetable_item/'+lecture,
+    url:'/items/'+id+'/unregister',
     method:'patch',
     success:function(){
       window.location = '/';
@@ -271,7 +277,7 @@ $('#modal-lecture-task .btn-danger').click(function(){
   })
 });
 
-//과제 등록
+//메모 등록
 $(document).on('click','.popover-body .btn-save', function () {
   console.log($(this).parent());
   console.log($('#PopoverContent #recipient-name'));
@@ -280,10 +286,10 @@ $(document).on('click','.popover-body .btn-save', function () {
   console.log($('.popover #message-text').val());
 
   $.ajax({
-    url:'/memos/insert_memo/',
+    url:'/memos',
     method:'post',
     data:{
-      lecture:$('#modal-lecture-task.modal').find('.lecture-title').text(),
+      lecture_id:$('#modal-lecture-task .lecture-id').val(),
       title: $('.popover #recipient-name').val(),
       discription: $('.popover #message-text').val()
     },
@@ -294,13 +300,11 @@ $(document).on('click','.popover-body .btn-save', function () {
   })
 })
 
-//메모하나를 가져오는 함수
+//메모를 가져오는 함수
 $.get_memo =  function () {
+  var id = $('#modal-lecture-task .lecture-id').val();
   $.ajax({
-    url :'/memos/get_memo/',
-    data:{
-      lecture:$('#modal-lecture-task.modal').find('.lecture-title').text()
-    },
+    url :'/memos/' + id,
     method:'get',
     success: function(items) {
       //선택된 항목들에 한해 추가
@@ -321,6 +325,12 @@ $.get_memo =  function () {
         memo_content.setAttribute('data-placement', 'top');
         memo_content.setAttribute('title', item.discription);
         memo_content.setAttribute('data-original-title', item.discription);
+
+        var memo_id = document.createElement('input');
+        memo_id.className='memo-id';
+        memo_id.setAttribute('type', 'hidden');
+        memo_id.setAttribute('value', item.id);
+        memo_content.append(memo_id);
 
         var memo_i1 = document.createElement('i');
         memo_i1.classList.add('material-icons');
@@ -360,12 +370,10 @@ $.get_memo =  function () {
 //메모 제거 함수
 $.delete_memo = function () {
   $('.memo-btn a').on('click',function(){
+    var id = $(this).parent().parent().find('.memo-id').val();
+    console.log(id);
     $.ajax({
-      url :'/memos/delete_memo/',
-      data:{
-        lecture:$('.modal-body h3').text(),
-        title:$(this).parent().parent().find('span').text()
-      },
+      url :'/memos/' + id,
       method:'delete',
       success:function(res){
         $.get_memo();

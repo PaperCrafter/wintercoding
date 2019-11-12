@@ -1,6 +1,11 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Item = sequelize.define('Items', {
+    id:{
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     code: {
       allowNull: false,
       primaryKey: true,
@@ -46,9 +51,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {timestamps: false});
   Item.associate = function(models) {
     Item.hasMany(models.Memos,{
-      foreignKey:'lecture',
-      sourceKey:'lecture'
-    });
+      foreignKey:'lecture_id',
+      sourceKey:'id'
+  });
   };
   return Item;
 };

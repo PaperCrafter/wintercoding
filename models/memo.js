@@ -1,9 +1,14 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Memo = sequelize.define('Memos',  {
-    lecture: {
+    id:{
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    lecture_id: {
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
     },
     title: {
         allowNull: false,
@@ -16,9 +21,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {timestamps: false});
   Memo.associate = function(models) {
     Memo.belongsTo(models.Items, {
-        foreignKey:'lecture'
+        foreignKey:'lecture_id',
+        targetKey:'id'
     })
   };
-  Memo.removeAttribute('id');
   return Memo;
 };

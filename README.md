@@ -1,5 +1,27 @@
 # programmers 과제 테스트 템플릿 - Node.js
 
+1차 수정 = uri를 restful하게 수정
+RESTful -  api
+
+items
+|CRUD|HTTP method|Rout|
+|-----------|------|------|
+|과목정보 검색|get|/items/search?input='검색어'|
+|과목정보를 메모와 같이 가져옴|get|/items/memos|
+|과목정보 하나 가져오기|get|/items/:id|
+|과목 시간표 추가 시 중복검사|post|/items/check-duplicated|
+|과목 시간표에 등록|patch|/items/:id/register|
+|과목 시간표에서 제거|patch|/items/:id/unregister|
+
+memos
+|CRUD|HTTP method|Rout|
+|-----------|------|------|
+|특정 과목에 있는 메모 가져오기|get|/memos/:id|
+|특정 과목에 있는 메모 하나 생성|post|/memos|
+|특정 과목에 있는 메모 하나 제거|delete|/memos/:id|
+
+
+
 programmers의 과제 테스트는 코드를 제출하면 자동으로 서버를 구성하여 실행해 볼 수 있는 환경을 제공합니다.
 
 아래 내용을 확인하여 프로젝트를 구성하고 코드를 제출해 주세요.

@@ -3,38 +3,8 @@ var router = express.Router();
 var {Items,Memos, Sequelize} = require('../models');
 var Op = Sequelize.Op;
 /* GET users listing. */
-//modal을 클릭했을 경우 항목을 보여주기 위한 get
-router.get('/get_modal_item', (req, res, next)=>{
-  try{
-    Items.findOne({where:{code:req.query.lecture_code}})
-    .then((item)=>{
-        console.log(item);
-        res.json(item);
-      }
-    );
-  }catch(error){
-    console.log(error);
-    next(error);
-  }
-});
-
-//modal을 클릭했을 경우 이름으로 항목을 검색하여 보여주기 위한 get
-router.get('/get_modal_item_name', (req, res, next)=>{
-  try{
-    Items.findOne({where:{lecture:req.query.lecture}})
-    .then((item)=>{
-        console.log(item);
-        res.json(item);
-      }
-    );
-  }catch(error){
-    console.log(error);
-    next(error);
-  }
-});
-
-//modal 검색을 위한 get
-router.get('/search_modal_item', (req, res, next)=>{
+//input으로 modal 검색을 위한 get
+router.get('/search', (req, res, next)=>{
   try{
     console.log(req);
     Items.findAll({
@@ -59,25 +29,7 @@ router.get('/search_modal_item', (req, res, next)=>{
 });
 
 //강의 테이블에 추가된 item만 반환
-router.get('/get_table_item', (req, res, next)=>{
-  try{
-    Items.findAll({
-      where:{
-        isAdded:1
-      }  
-      })
-    .then((items)=>{
-        res.json(items);
-      }
-    );
-  }catch(error){
-    console.log(error);
-    next(error);
-  }
-});
-
-//강의 테이블에 추가된 item만 반환
-router.get('/get_table_item_join', (req, res, next)=>{
+router.get('/memos', (req, res, next)=>{
   try{
     Items.findAll({
       include:{
@@ -89,8 +41,23 @@ router.get('/get_table_item_join', (req, res, next)=>{
       }
     })
     .then((items)=>{
-        //console.log(items);
+        console.log(items);
         res.send(items);
+      }
+    );
+  }catch(error){
+    console.log(error);
+    next(error);
+  }
+});
+
+//modal을 클릭했을 경우 항목을 보여주기 위한 get
+router.get('/:id', (req, res, next)=>{
+  try{
+    Items.findOne({where:{id:req.params.id}})
+    .then((item)=>{
+        console.log(item);
+        res.json(item);
       }
     );
   }catch(error){
@@ -101,7 +68,7 @@ router.get('/get_table_item_join', (req, res, next)=>{
 
 
 //item 중복검사를 위한 get
-router.post('/chk_duplicated_item', (req, res, next)=>{
+router.post('/check-duplicated', (req, res, next)=>{
   try{
     console.log(req.body.start_time);
     console.log(req.body.end_time);
@@ -150,11 +117,11 @@ router.post('/chk_duplicated_item', (req, res, next)=>{
 });
 
 //강의 테이블에 item 하나 추가
-router.patch('/add_timetable_item/:code', (req, res, next)=>{
+router.patch('/:id/register', (req, res, next)=>{
   console.log(req.params.code);
   try{
     Items.update({isAdded: 1},{
-      where:{code:req.params.code}
+      where:{id:req.params.id}
     })
     .then((items)=>{
       console.log(items);
@@ -168,11 +135,11 @@ router.patch('/add_timetable_item/:code', (req, res, next)=>{
 });
 
 //time-table에 존재하는 item을 제거
-router.patch('/delete_timetable_item/:lecture', (req, res, next)=>{
-  console.log(req.params.lecture);
+router.patch('/:id/unregister', (req, res, next)=>{
+  console.log(req.params.id);
   try{
     Items.update({isAdded: 0},{
-      where:{lecture:req.params.lecture}
+      where:{id:req.params.id}
     })
     .then((items)=>{
       console.log(items);

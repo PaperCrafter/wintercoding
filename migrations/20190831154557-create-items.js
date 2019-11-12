@@ -3,9 +3,13 @@ module.exports = {
   up: (queryInterface, DataTypes) => {
     return Promise.all([
     queryInterface.createTable('Items', {
+      id:{
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
       code: {
         allowNull: false,
-        primaryKey: true,
         unique:true,
         type: DataTypes.STRING
       },
@@ -48,12 +52,17 @@ module.exports = {
       }
     }),
     queryInterface.createTable('Memos', {
-      lecture: {
+      id:{
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      lecture_id: {
         allowNull: false,
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         references: {
           model: "Items",
-          key: "lecture"
+          key: "id"
         }
       },
       title: {
